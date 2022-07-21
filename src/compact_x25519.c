@@ -48,16 +48,16 @@ void compact_x25519_derive_encryption_key(
     const uint8_t public_key1[X25519_KEY_SIZE], 
     const uint8_t public_key2[X25519_KEY_SIZE]
 ) {
+    uint8_t key_data[X25519_SHARED_SIZE + 2 * X25519_KEY_SIZE];
+    uint8_t *p = key_data;
+    struct sha512_state hasher;
     if (key_size > SHA512_HASH_SIZE) {
         key_size = SHA512_HASH_SIZE;
     }
-    uint8_t key_data[X25519_SHARED_SIZE + 2 * X25519_KEY_SIZE];
-    uint8_t *p = key_data;
     p = append(p, shared_secret, X25519_SHARED_SIZE);
     p = append(p, public_key1, X25519_KEY_SIZE);
     append(p, public_key2, X25519_KEY_SIZE);
 
-    struct sha512_state hasher;
     sha512_init(&hasher);
     sha512_final(&hasher, key_data, sizeof(key_data));
     sha512_get(&hasher, encryption_key, 0, key_size);
